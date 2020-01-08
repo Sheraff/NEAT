@@ -1,11 +1,7 @@
 // implementing NEAT: http://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf
 // glossary / help: https://neat-python.readthedocs.io/en/latest/glossary.html#term-gene
 
-
-class Individual {
-	connections = []
-	fitness = 0
-}
+import Individual, { makeZeroNodes } from './individual.js'
 
 class Population {
 	static speciesThreshold = .2 // if distance(a, b) > speciesThreshold => a & b belong to ≠ species
@@ -51,3 +47,29 @@ class Population {
 		return fitnessArray.map(fitness => fitness / fitnessArray.length)
 	}
 }
+
+const initialNodesModel = makeZeroNodes()
+
+const indiv1 = new Individual({
+	nodes: initialNodesModel
+})
+const indiv2 = new Individual({
+	nodes: initialNodesModel
+})
+
+const individuals = []
+for (let i = 0; i < 10; i++) {
+	const combinedModel = Individual.mate(indiv1, indiv2, .1)
+	individuals.push(new Individual(combinedModel))
+}
+
+
+for (let i = 0; i < 10; i++) {
+	individuals.forEach(indiv => indiv.iterate([['anything', i/10]]))
+	console.log('------------------------------------------------------------')
+}
+
+
+
+
+// console.log(indiv)

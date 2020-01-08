@@ -1,4 +1,6 @@
-ACTIVATIONS = new Map([
+const ACTIVATIONS_NAMES = ['abs', 'clamped', 'cube', 'exp', 'gauss', 'hat', 'identity', 'inv', 'log', 'relu', 'elu', 'sigmoid', 'sin', 'square', 'tanh', 'binary']
+
+const ACTIVATIONS = new Map([
 	['abs', x => Math.abs(x)],
 	['clamped', x => Math.min(1, Math.max(-1, x))],
 	['cube', x => Math.pow(x, 3)],
@@ -20,25 +22,30 @@ ACTIVATIONS = new Map([
 	['binary', x => x < 0 ? 0 : 1],
 ])
 
-AGGREGATIONS = new Map([
-	['product', arr => arr.reduce((accu, curr) => accu * curr, 1)]
-	['sum', arr => arr.reduce((accu, curr) => accu + curr, 0)]
-	['max', arr => Math.max(...arr)]
-	['min', arr => Math.min(...arr)]
-	['maxabs', arr => Math.max(...arr.map(Math.abs))]
-	['median', arr => arr.sort()[Math.ceil(arr.length / 2)]]
-	['mean', arr => arr.reduce((accu, curr) => accu + curr, 0) / arr.length]
+const AGGREGATIONS_NAMES = ['product', 'sum', 'max', 'min', 'maxabs', 'median', 'mean']
+
+const AGGREGATIONS = new Map([
+	['product', arr => arr.reduce((accu, curr) => accu * curr, 1)],
+	['sum', arr => arr.reduce((accu, curr) => accu + curr, 0)],
+	['max', arr => Math.max(...arr)],
+	['min', arr => Math.min(...arr)],
+	['maxabs', arr => Math.max(...arr.map(Math.abs))],
+	['median', arr => arr.sort()[Math.ceil(arr.length / 2)]],
+	['mean', arr => arr.reduce((accu, curr) => accu + curr, 0) / arr.length],
 ])
 
-export default class NodeGene {
-	static id = 0
+function getRandomInt(max) {
+	return Math.floor(Math.random() * Math.floor(max))
+}
 
-	static getID () {
-		return NodeGene.id++
+let globalNodeId = 0
+export default class NodeGene {
+	static getID() {
+		return globalNodeId++
 	}
 
 	static get length() {
-		return NodeGene.id
+		return globalNodeId
 	}
 
 	constructor({
@@ -47,15 +54,51 @@ export default class NodeGene {
 		aggregation = 'sum',
 		bias = 0,
 		response = 1,
+		type = 'hidden',
+		name = '',
 	} = {}) {
+		this.model = { id, activation, aggregation, bias, response, type, name }
 		this.id = id
 		this.activation = ACTIVATIONS.get(activation)
 		this.aggregation = AGGREGATIONS.get(aggregation)
 		this.bias = bias
 		this.response = response
+		this.type = type
+		this.name = name
+		this.output = 0
 	}
 
 	respond(inputs) {
 		return this.activation(this.bias + this.response * this.aggregation(inputs))
+	}
+
+	static mutate(model, chance = .01) {
+		const newModel = {}
+		Object.entries(model).forEach(([key, value]) => {
+			if (Math.random() > chance)
+				return newModel[key] = value
+
+			switch (key) {
+				case 'id':
+				case 'type':
+				case 'name':
+					newModel[key] = value
+					break
+				case 'activation':
+					newModel[key] = ACTIVATIONS_NAMES[getRandomInt(ACTIVATIONS_NAMES.length)]
+					break
+				case 'aggregation':
+					newModel[key] = AGGREGATIONS_NAMES[getRandomInt(AGGREGATIONS_NAMES.length)]
+					break
+				case 'bias':
+				case 'response':
+					newModel[key] = Math.random()
+			}
+		})
+		return newModel
+	}
+
+	static mate(a, b) {
+		return Math.random() < .5 ? a : b
 	}
 }
