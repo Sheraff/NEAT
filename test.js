@@ -1,4 +1,5 @@
 // implementing NEAT: http://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf
+// glossary / help: https://neat-python.readthedocs.io/en/latest/glossary.html#term-gene
 
 class Connection {
 	static getID = (() => {
@@ -62,8 +63,7 @@ class Population {
 	}
 
 	static offspringCount(species, avgPopulationFitness) {
-		const speciesAdjustedFitnessSum = species.map(individual => individual.fitness)
-			.map(adjustedFitness)
+		const speciesAdjustedFitnessSum = adjustedFitness(species.map(individual => individual.fitness))
 			.reduce((accu, curr) => accu + curr)
 		return speciesAdjustedFitnessSum / avgPopulationFitness
 	}
