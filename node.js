@@ -31,10 +31,15 @@ AGGREGATIONS = new Map([
 ])
 
 export default class NodeGene {
-	static getID = (() => {
-		let id = 0
-		return () => id++
-	})()
+	static id = 0
+
+	static getID () {
+		return NodeGene.id++
+	}
+
+	static get length() {
+		return NodeGene.id
+	}
 
 	constructor({
 		id = NodeGene.getID(),
