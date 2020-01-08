@@ -1,3 +1,4 @@
+import { getRandomInt } from './utils.js'
 import NodeGene from './node.js'
 import ConnectionGene from './connection.js'
 
@@ -40,6 +41,7 @@ export function makeZeroNodes() {
 		const node = new NodeGene({ type: 'output', name, id: INPUTS.length + i })
 		models.push(node.model)
 	})
+	NodeGene.reservedLength = INPUTS.length + OUTPUTS.length
 	return models
 }
 
@@ -62,12 +64,12 @@ export default class Individual {
 		nodes.forEach(model => {
 			const node = new NodeGene(model)
 			this.nodes[node.id] = node
-			if(node.type === 'input')
+			if (node.type === 'input')
 				this.inputs.set(node.name, node)
-			else if(node.type === 'output')
+			else if (node.type === 'output')
 				this.outputs.set(node.name, node)
 		})
-		
+
 		this.fitness = 0
 		this.state = new BrainState(this.nodes.filter(node => !!node))
 	}
@@ -97,11 +99,16 @@ export default class Individual {
 		console.log(OUTPUTS.map(name => `${name}: ${this.outputs.get(name).output}`))
 	}
 
-	static mate(a, b, chance) {
-		return {
+	static mate(a, b, chance = .01) {
+		const model = {
 			connections: Individual.mateGeneType(ConnectionGene, 'connections', a, b, chance),
-			nodes: Individual.mateGeneType(NodeGene, 'nodes', a, b, chance)
+			nodes: Individual.mateGeneType(NodeGene, 'nodes', a, b, chance),
 		}
+		if (Math.random() < .5)
+			Individual.addConnection(model)
+		if (Math.random() < .5)
+			Individual.addNode(model)
+		return model
 	}
 
 	static mateGeneType(prototype, key, a, b, chance) {
@@ -120,5 +127,24 @@ export default class Individual {
 			result.push(prototype.mutate(geneA || geneB, chance))
 		}
 		return result
+	}
+
+	static addConnection(model) {
+		const from = getRandomInt(model.nodes.length)
+		const to = getRandomInt(model.nodes.length)
+		const newConnection = new ConnectionGene({ nodes: { from, to } })
+		model.connections.push(newConnection.model)
+	}
+
+	static addNode(model) {
+		if (!model.connections.length)
+			return
+		const [connection] = model.connections.splice(getRandomInt(model.connections.length), 1)
+		const node = new NodeGene()
+		model.nodes.push(node.model)
+		const connectionFrom = new ConnectionGene({ nodes: { from: connection.nodes.from, to: node.id } })
+		model.connections.push(connectionFrom.model)
+		const connectionTo = new ConnectionGene({ nodes: { from: node.id, to: connection.nodes.to } })
+		model.connections.push(connectionTo.model)
 	}
 }

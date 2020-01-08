@@ -64,7 +64,7 @@ for (let i = 0; i < 10; i++) {
 }
 
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 3; i++) {
 	individuals.forEach(indiv => indiv.iterate([['anything', i/10]]))
 	console.log('------------------------------------------------------------')
 }

@@ -1,3 +1,5 @@
+import { getRandomInt } from './utils.js'
+
 const ACTIVATIONS_NAMES = ['abs', 'clamped', 'cube', 'exp', 'gauss', 'hat', 'identity', 'inv', 'log', 'relu', 'elu', 'sigmoid', 'sin', 'square', 'tanh', 'binary']
 
 const ACTIVATIONS = new Map([
@@ -34,9 +36,7 @@ const AGGREGATIONS = new Map([
 	['mean', arr => arr.reduce((accu, curr) => accu + curr, 0) / arr.length],
 ])
 
-function getRandomInt(max) {
-	return Math.floor(Math.random() * Math.floor(max))
-}
+
 
 let globalNodeId = 0
 export default class NodeGene {
@@ -46,6 +46,10 @@ export default class NodeGene {
 
 	static get length() {
 		return globalNodeId
+	}
+
+	static set reservedLength(value) {
+		globalNodeId = value
 	}
 
 	constructor({
