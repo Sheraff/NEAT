@@ -84,8 +84,13 @@ export default class Individual {
 		this.connections.forEach(connection => {
 			if (!connection)
 				return
-			const value = this.nodes[connection.nodes.from].output
-			this.state.pushInput(this.nodes[connection.nodes.to], connection.transfer(value))
+			try {
+				const value = this.nodes[connection.nodes.from].output
+				this.state.pushInput(this.nodes[connection.nodes.to], connection.transfer(value))
+			} catch (e) {
+				console.log(this, connection)
+				throw e
+			}
 		})
 
 		// update output of each node, based on array of inputs
@@ -94,9 +99,6 @@ export default class Individual {
 				return
 			node.output = node.respond(this.state.get(node))
 		})
-
-		// use output of each output node
-		console.log(OUTPUTS.map(name => `${name}: ${this.outputs.get(name).output}`))
 	}
 
 	static mate(a, b, chance = .01) {
@@ -104,10 +106,13 @@ export default class Individual {
 			connections: Individual.mateGeneType(ConnectionGene, 'connections', a, b, chance),
 			nodes: Individual.mateGeneType(NodeGene, 'nodes', a, b, chance),
 		}
-		if (Math.random() < .5)
-			Individual.addConnection(model)
-		if (Math.random() < .5)
-			Individual.addNode(model)
+		if (Math.random() < .5) {
+			if (Math.random() < .5)
+				Individual.addConnection(model)
+		} else {
+			if (Math.random() < .5)
+				Individual.addNode(model)
+		}
 		return model
 	}
 
@@ -130,8 +135,8 @@ export default class Individual {
 	}
 
 	static addConnection(model) {
-		const from = getRandomInt(model.nodes.length)
-		const to = getRandomInt(model.nodes.length)
+		const from = model.nodes[getRandomInt(model.nodes.length)].id
+		const to = model.nodes[getRandomInt(model.nodes.length)].id
 		const newConnection = new ConnectionGene({ nodes: { from, to } })
 		model.connections.push(newConnection.model)
 	}
@@ -142,9 +147,10 @@ export default class Individual {
 		const [connection] = model.connections.splice(getRandomInt(model.connections.length), 1)
 		const node = new NodeGene()
 		model.nodes.push(node.model)
-		const connectionFrom = new ConnectionGene({ nodes: { from: connection.nodes.from, to: node.id } })
+		const connectionFrom = new ConnectionGene({ nodes: { from: connection.nodes.from, to: node.model.id } })
 		model.connections.push(connectionFrom.model)
-		const connectionTo = new ConnectionGene({ nodes: { from: node.id, to: connection.nodes.to } })
+		const connectionTo = new ConnectionGene({ nodes: { from: node.model.id, to: connection.nodes.to } })
 		model.connections.push(connectionTo.model)
+		console.log(connection, node, connectionFrom, connectionTo, model.connections)
 	}
 }
