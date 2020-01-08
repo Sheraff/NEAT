@@ -1,20 +1,17 @@
 let globalConnectionId = 0
 
 export default class ConnectionGene {
-	static getID () {
+	static getID() {
 		return globalConnectionId++
 	}
 
 	constructor({
-		nodes: {
-			from = 0,
-			to = 0
-		} = {},
+		nodes: { from, to } = {},
 		weight = 1,
 		expressed = true,
 		innovation = ConnectionGene.getID()
 	} = {}) {
-		this.model = {nodes: {from, to}, weight, expressed, innovation}
+		this.model = { nodes: { from, to }, weight, expressed, innovation }
 		this.nodes = { from, to }
 		this.weight = weight
 		this.expressed = expressed

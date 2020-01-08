@@ -84,13 +84,8 @@ export default class Individual {
 		this.connections.forEach(connection => {
 			if (!connection)
 				return
-			try {
-				const value = this.nodes[connection.nodes.from].output
-				this.state.pushInput(this.nodes[connection.nodes.to], connection.transfer(value))
-			} catch (e) {
-				console.log(this, connection)
-				throw e
-			}
+			const value = this.nodes[connection.nodes.from].output
+			this.state.pushInput(this.nodes[connection.nodes.to], connection.transfer(value))
 		})
 
 		// update output of each node, based on array of inputs
@@ -151,6 +146,9 @@ export default class Individual {
 		model.connections.push(connectionFrom.model)
 		const connectionTo = new ConnectionGene({ nodes: { from: node.model.id, to: connection.nodes.to } })
 		model.connections.push(connectionTo.model)
-		console.log(connection, node, connectionFrom, connectionTo, model.connections)
+
+		if(!model.nodes.some(node => node.id === connection.nodes.from) || !model.nodes.some(node => node.id === connection.nodes.to)) {
+			a = console.log('problem')
+		}
 	}
 }

@@ -28,9 +28,9 @@ do {
 		individuals.forEach(indiv => indiv.iterate([['anything', i/10]]))
 	}
 
-	individuals.forEach(indiv => {
-		console.log(indiv.outputs.get('linear_speed').output)
-	})
+	// individuals.forEach(indiv => {
+	// 	console.log(indiv.outputs.get('linear_speed').output)
+	// })
 
 	const [fit1, fit2] = individuals
 		.filter(a => !Number.isNaN(a.outputs.get('linear_speed').output))
