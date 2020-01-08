@@ -1,27 +1,6 @@
 // implementing NEAT: http://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf
 // glossary / help: https://neat-python.readthedocs.io/en/latest/glossary.html#term-gene
 
-class Connection {
-	static getID = (() => {
-		let id = 0
-		return () => id++
-	})()
-
-	constructor({
-		nodes: {
-			from = 0,
-			to = 0
-		} = {},
-		weight = 0,
-		expressed = false,
-		innovation = Connection.getID()
-	}) {
-		this.nodes = { from, to }
-		this.weight = weight
-		this.expressed = expressed
-		this.innovation = innovation
-	}
-}
 
 class Individual {
 	connections = []
