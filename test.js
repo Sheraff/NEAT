@@ -63,6 +63,11 @@ class Individual
 	this.brain = new Brain(this.genome.nodes, this.genome.connections)
 	this.body = new Body(this.genome.attributes)
 	fitness()
+	iterate(world) {
+		inputs = this.senses.iterate(world)
+		instructions = this.brain.iterate(inputs)
+		return this.body.iterate(instructions)
+	}
 
 class Brain
 	this.neurons = new Map(nodes.map)
