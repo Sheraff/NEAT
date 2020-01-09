@@ -47,3 +47,32 @@ do {
 
 
 // console.log(indiv)
+
+/**
+ * 
+ * 
+class Gene
+	this.model
+	static mutate
+	static mate
+class Node extends Gene
+class Connection extends Gene
+class Attribute extends Gene
+
+class Individual
+	this.brain = new Brain(this.genome.nodes, this.genome.connections)
+	this.body = new Body(this.genome.attributes)
+	fitness()
+
+class Brain
+	this.neurons = new Map(nodes.map)
+	this.axons = new Map(connections.map)
+	iterate()
+
+class Body
+	this.constants = new Phenotype(attributes) // { max_speed, growth_rate, skin_color, ... }
+	this.dynamics = { speed, direction, size }
+	iterate()
+ * 
+ * 
+ */
